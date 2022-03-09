@@ -26,46 +26,51 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package org.firstinspires.ftc.teamcode.robot;
 
-
+import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
-import com.qualcomm.robotcore.hardware.Servo;
 
+import org.firstinspires.ftc.robotcore.external.navigation.DistanceUnit;
 
-@TeleOp(name = "motorPos", group = "Freight Frenzy")
-//@Disabled
-public class motorPos extends LinearOpMode {
-
+/**
+ * {@link TestRangeSensor} illustrates how to use the Modern Robotics
+ * Range Sensor.
+ *
+ * The op mode assumes that the range sensor is configured with a name of "sensor_range".
+ *
+ * Use Android Studio to Copy this Class, and Paste it into your team's code folder with a new name.
+ * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
+ *
+ * @see <a href="http://modernroboticsinc.com/range-sensor">MR Range Sensor</a>
+ */
+@TeleOp(name = "TestRangeSensor", group = "Freight Frenzy")
+// @Disabled   // comment out or remove this line to enable this opmode
+public class TestRangeSensor extends LinearOpMode {
     ArmSubsystem arm = new ArmSubsystem();
+    IntakeSubsystem intake = new IntakeSubsystem();
 
-    boolean prev[] = {false, false};
-    @Override
-    public void runOpMode() {
-        //  arm = hardwareMap.get(DcMotor.class, "arm");
+    @Override public void runOpMode() {
         arm.init(hardwareMap, this, "teleop");
+        intake.init(hardwareMap, this, "teleop");
+
+        arm.setIntake(intake);
+        intake.setArm(arm);
 
         waitForStart();
         while (opModeIsActive()) {
-            if (singleClick(gamepad1.right_bumper, 0)) {
-                arm.setPos(arm.getPos()+20);
-            } else if (singleClick(gamepad1.left_bumper, 1)) {
-                arm.setPos(arm.getPos()-20);
+
+            // Test intake
+            if(gamepad1.a){
+                intake.turnOnOut();
+            }else if(gamepad1.b){
+                intake.turnOnIn();
+            }else{
+                intake.turnOffOnCaptured(500);
             }
-            telemetry.addData("motor", arm.getPos());
-
-            arm.moveV(arm.getPos());
-            sleep(100);
-            telemetry.update();
-
-
-
         }
-    }
-    public boolean singleClick(boolean cur, int loc){
-        boolean temp = cur && !prev[loc];
-        prev[loc] = cur;
-        return temp;
     }
 }
